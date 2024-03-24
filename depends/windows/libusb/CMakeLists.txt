@@ -19,6 +19,13 @@ endif()
 
 include_directories(libusb)
 
+add_definitions(-D_LARGEFILE64_SOURCE
+                -D_FILE_OFFSET_BITS=64
+                -D__STDC_FORMAT_MACROS
+                -D_CRT_NONSTDC_NO_DEPRECATE
+                -D_CRT_SECURE_NO_WARNINGS
+                -D_WINSOCK_DEPRECATED_NO_WARNINGS)
+
 set(prefix ${CMAKE_INSTALL_PREFIX})
 set(exec_prefix "$")
 set(exec_prefix "${exec_prefix}{")
