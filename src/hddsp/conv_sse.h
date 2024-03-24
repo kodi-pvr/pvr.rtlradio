@@ -19,6 +19,15 @@
  * Author: Tom Tsou <tom.tsou@ettus.com>
  */
 
+#ifdef HAVE_SSE4_1
+#undef HAVE_SSE4_1
+#endif
+#ifdef HAVE_SSE41
+#undef HAVE_SSE41
+#endif
+
+
+
 #include "config.h"
 
 #include <stdint.h>
