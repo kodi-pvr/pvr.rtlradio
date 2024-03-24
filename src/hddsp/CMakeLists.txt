@@ -33,4 +33,6 @@ set(HEADERS acquire.h
             sync.h
             unicode.h)
 
+set_source_files_properties(conv_dec.c PROPERTIES COMPILE_FLAGS -DHAVE_SSE4_1=0)
+
 add_library(code_src_hddsp OBJECT ${SOURCES} ${HEADERS})
