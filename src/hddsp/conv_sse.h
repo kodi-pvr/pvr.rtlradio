@@ -231,7 +231,7 @@
  * trellis. 32 butterfly operations are computed. Deinterleave path
  * metrics before computing branch metrics as in the half rate case.
  */
-static ATTR_FORCEINLINE void _sse_metrics_k7_n4(const int16_t *val, const int16_t *out,
+ATTR_FORCEINLINE static void _sse_metrics_k7_n4(const int16_t *val, const int16_t *out,
 					int16_t *sums, int16_t *paths, int norm)
 {
 	__m128i m0, m1, m2, m3, m4, m5, m6, m7;
