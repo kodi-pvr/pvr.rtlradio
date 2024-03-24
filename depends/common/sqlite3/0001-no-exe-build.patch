@@ -1,3 +1,5 @@
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
 @@ -5,7 +5,7 @@
  
  include_directories(${CMAKE_SOURCE_DIR}/src)
