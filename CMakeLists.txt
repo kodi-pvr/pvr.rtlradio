@@ -61,7 +61,7 @@ list(APPEND DEPLIBS code_src
 set(PVRRTLRADIO_SOURCES src/addon.cpp)
 set(PVRRTLRADIO_HEADERS src/addon.h)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -msse4.1")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -msse4.1 -maes")
 
 build_addon(${CMAKE_PROJECT_NAME} PVRRTLRADIO DEPLIBS)
 
