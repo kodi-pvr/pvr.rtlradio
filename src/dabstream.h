@@ -24,8 +24,8 @@
 #define __DABSTREAM_H_
 #pragma once
 
-#include "dsp_dab/radio-receiver.h"
-#include "dsp_dab/ringbuffer.h"
+//#include "dsp_dab/radio-receiver.h"
+//#include "dsp_dab/ringbuffer.h"
 #include "id3v2tag.h"
 #include "props.h"
 #include "pvrstream.h"
@@ -33,6 +33,7 @@
 #include "utils/scalar_condition.h"
 
 #include <atomic>
+#include <complex>
 #include <condition_variable>
 #include <memory>
 #include <mutex>
@@ -46,10 +47,10 @@
 //
 // Implements a DAB stream
 
-class dabstream : public pvrstream,
+class dabstream : public pvrstream/*,
                   private InputInterface,
                   private ProgrammeHandlerInterface,
-                  private RadioControllerInterface
+                  private RadioControllerInterface*/
 {
 public:
   // Destructor
@@ -238,11 +239,11 @@ private:
 
   //-----------------------------------------------------------------------
   // InputInterface Implementation
-
+  /*
   // getSamples
   //
   // Reads the specified number of samples from the input device
-  int32_t getSamples(DSPCOMPLEX* buffer, int32_t size) override;
+  int32_t getSamples(std::complex<float>* buffer, int32_t size) override;
 
   // getSamplesToRead
   //
@@ -281,7 +282,7 @@ private:
 
   //-----------------------------------------------------------------------
   // RadioControllerInterface
-
+  
   // onFrequencyCorrectorChange
   //
   // Invoked when the frequency correction has been changed
@@ -310,14 +311,14 @@ private:
   // onSyncChange
   //
   // Invoked when signal synchronization was acquired or lost
-  void onSyncChange(bool isSync) override;
+  void onSyncChange(bool isSync) override;*/
 
   //-----------------------------------------------------------------------
   // Member Variables
 
   std::unique_ptr<rtldevice> m_device; // RTL-SDR device instance
-  aligned_ptr<RadioReceiver> m_receiver; // RadioReceiver instance
-  RingBuffer<uint8_t> m_ringbuffer; // I/Q sample ring buffer
+  //aligned_ptr<RadioReceiver> m_receiver; // RadioReceiver instance
+  //RingBuffer<uint8_t> m_ringbuffer; // I/Q sample ring buffer
 
   std::unique_ptr<id3v2tag> m_tag;
 

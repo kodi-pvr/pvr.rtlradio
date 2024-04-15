@@ -24,7 +24,7 @@
 
 #include "exception_control/string_exception.h"
 #include "utils/value_size_defines.h"
-#include "dsp_dab/decoders/data/mot/mot_file.h"
+//#include "dsp_dab/decoders/data/mot/mot_file.h"
 
 #define KODI_HAS_ID3
 
@@ -77,7 +77,7 @@ dabstream::dabstream(std::unique_ptr<rtldevice> device,
                      struct dabprops const& dabprops,
                      uint32_t subchannel)
   : m_device(std::move(device)),
-    m_ringbuffer(RING_BUFFER_SIZE),
+    //m_ringbuffer(RING_BUFFER_SIZE),
     m_subchannel((subchannel > 0) ? subchannel : 1),
     m_pcmgain(powf(10.0f, dabprops.outputgain / 10.0f))
 {
@@ -90,7 +90,7 @@ dabstream::dabstream(std::unique_ptr<rtldevice> device,
   m_device->set_automatic_gain_control(channelprops.autogain);
   if (channelprops.autogain == false)
     m_device->set_gain(channelprops.manualgain);
-
+  /*
   // Construct and initialize the demodulator instance
   RadioControllerInterface& controllerinterface = *static_cast<RadioControllerInterface*>(this);
   InputInterface& inputinterface = *static_cast<InputInterface*>(this);
@@ -104,7 +104,7 @@ dabstream::dabstream(std::unique_ptr<rtldevice> device,
   // Create the worker thread
   scalar_condition<bool> started{false};
   m_worker = std::thread(&dabstream::worker, this, std::ref(started));
-  started.wait_until_equals(true);
+  started.wait_until_equals(true);*/
 }
 
 //---------------------------------------------------------------------------
@@ -145,11 +145,11 @@ void dabstream::close(void)
     m_device->cancel_async(); // Cancel any async read operations
   if (m_worker.joinable())
     m_worker.join(); // Wait for thread
-
+  /*
   if (m_receiver)
     m_receiver->stop(); // Stop receiver
   m_receiver.reset(); // Reset receiver instance
-
+  */
   m_device.reset(); // Release RTL-SDR device
 }
 
@@ -215,12 +215,12 @@ DEMUX_PACKET* dabstream::demuxread(std::function<DEMUX_PACKET*(int)> const& allo
 {
   std::unique_lock<std::mutex> lock(m_queuelock);
 
-  // Wait up to 50ms for there to be a packet available for processing
+ /* // Wait up to 50ms for there to be a packet available for processing
   if (!m_queuecv.wait_for(lock, std::chrono::milliseconds(50),
                           [&]() -> bool
-                          { return ((m_queue.size() > 0) || m_stopped.load() == true); }))
+                          { return ((m_queue.size() > 0) || m_stopped.load() == true); }))*/
     return allocator(0);
-
+  /*
   // If the worker thread was stopped, check for and re-throw any exception that occurred,
   // otherwise assume it was stopped normally and return an empty demultiplexer packet
   if (m_stopped.load() == true)
@@ -256,7 +256,7 @@ DEMUX_PACKET* dabstream::demuxread(std::function<DEMUX_PACKET*(int)> const& allo
       memcpy(demuxpacket->pData, packet->data.get(), packet->size);
   }
 
-  return demuxpacket;
+  return demuxpacket;*/
 }
 
 //---------------------------------------------------------------------------
@@ -442,7 +442,7 @@ void dabstream::signalquality(int& quality, int& snr) const
 
 void dabstream::worker(scalar_condition<bool>& started)
 {
-  std::vector<Service> servicelist; // vector<> of current services
+/*  std::vector<Service> servicelist; // vector<> of current services
   bool foundsub = false; // Flag indicating the desired subchannel was found
 
   assert(m_device);
@@ -541,8 +541,9 @@ void dabstream::worker(scalar_condition<bool>& started)
 
   m_stopped.store(true); // Worker thread is now stopped
   m_queuecv.notify_all(); // Unblock any demux queue waiters
+  */
 }
-
+/*
 //---------------------------------------------------------------------------
 // dabstream::getSamples (InputInterface)
 //
@@ -553,7 +554,7 @@ void dabstream::worker(scalar_condition<bool>& started)
 //	buffer		- Buffer to receive the input samples
 //	size		- Number of samples to read
 
-int32_t dabstream::getSamples(DSPCOMPLEX* buffer, int32_t size)
+int32_t dabstream::getSamples(std::complex<float>* buffer, int32_t size)
 {
   int32_t numsamples = 0; // Number of available samples in the buffer
 
@@ -568,7 +569,7 @@ int32_t dabstream::getSamples(DSPCOMPLEX* buffer, int32_t size)
   {
 
     buffer[index] =
-        DSPCOMPLEX((static_cast<float>(tempbuffer[index * 2]) - 128.0f) / 128.0f, // real
+      std::complex<float>((static_cast<float>(tempbuffer[index * 2]) - 128.0f) / 128.0f, // real
                    (static_cast<float>(tempbuffer[(index * 2) + 1]) - 128.0f) / 128.0f // imaginary
         );
   }
@@ -636,7 +637,7 @@ bool dabstream::restart(void)
 
 void dabstream::onNewAudio(std::vector<int16_t>&& audioData,
                            int sampleRate,
-                           std::string const& /*mode*/)
+                           std::string const& mode)
 {
   if (audioData.size() == 0)
     return;
@@ -826,7 +827,7 @@ void dabstream::onMOT(mot_file_t const& mot_file)
 //	fine			- Fine frequency correction value
 //	coarse			- Coarse frequency correction value
 
-void dabstream::onFrequencyCorrectorChange(int /*fine*/, int /*coarse*/)
+void dabstream::onFrequencyCorrectorChange(int fine, int coarse)
 {
   // TODO - This can be applied to the device real-time?
 }
@@ -855,7 +856,7 @@ void dabstream::onInputFailure(void)
 //
 //	sId			- New service identifier
 
-void dabstream::onServiceDetected(uint32_t /*sId*/)
+void dabstream::onServiceDetected(uint32_t sId)
 {
   std::unique_lock<std::mutex> lock(m_eventslock);
   m_events.emplace(eventid_t::ServiceDetected);
@@ -870,7 +871,7 @@ void dabstream::onServiceDetected(uint32_t /*sId*/)
 //
 //	label		- New ensemble label
 
-void dabstream::onSetEnsembleLabel(DabLabel& /*label*/)
+void dabstream::onSetEnsembleLabel(DabLabel& label)
 {
   //
   // TODO: This can probably be used to automatically generate
@@ -887,7 +888,7 @@ void dabstream::onSetEnsembleLabel(DabLabel& /*label*/)
 //
 //	snr			- Signal-to-Noise Ratio, in dB
 
-void dabstream::onSNR(float /*snr*/)
+void dabstream::onSNR(float snr)
 {
   //
   // TODO: Figure out what an acceptable SNR is for DAB and provide
@@ -904,14 +905,14 @@ void dabstream::onSNR(float /*snr*/)
 //
 //	isSync		- Synchronization flag
 
-void dabstream::onSyncChange(bool /*isSync*/)
+void dabstream::onSyncChange(bool isSync)
 {
   //
   // TODO: This might need to STREAMCHANGE, clear the demux queue,
   // silence the audio, and maybe throw up a banner to the user
   //
 }
-
+*/
 //---------------------------------------------------------------------------
 
 #pragma warning(pop)
