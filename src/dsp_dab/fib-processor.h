@@ -25,114 +25,104 @@
 #ifndef FIB_PROCESSOR
 #define FIB_PROCESSOR
 
-#include <vector>
-#include <list>
-#include <unordered_map>
-#include <chrono>
-#include <array>
-#include <mutex>
-#include <cstdint>
-#include <cstdio>
 #include "msc-handler.h"
 #include "radio-controller.h"
+#include "dsp_dab/decoders/data/mot/mot_manager.h"
 
-class FIBProcessor {
-    public:
-        FIBProcessor(RadioControllerInterface& mr);
+#include <array>
+#include <chrono>
+#include <cstdint>
+#include <cstdio>
+#include <functional>
+#include <list>
+#include <memory>
+#include <mutex>
+#include <unordered_map>
+#include <vector>
 
-        // called from the demodulator
-        void processFIB(uint8_t *p, uint16_t fib);
-        void clearEnsemble();
+class FIBProcessor
+{
+public:
+  FIBProcessor(RadioControllerInterface& mr);
 
-        // Called from the frontend
-        uint16_t getEnsembleId() const;
-        uint8_t getEnsembleEcc() const;
-        DabLabel getEnsembleLabel() const;
-        std::vector<Service> getServiceList() const;
-        Service getService(uint32_t sId) const;
-        std::list<ServiceComponent> getComponents(const Service& s) const;
-        Subchannel getSubchannel(const ServiceComponent& sc) const;
-        std::chrono::system_clock::time_point getTimeLastFCT0Frame() const;
+  // called from the demodulator
+  void processFIB(uint8_t* p, uint16_t fib);
+  void clearEnsemble();
 
-    private:
-        RadioControllerInterface& myRadioInterface;
-        Service *findServiceId(uint32_t serviceId);
-        ServiceComponent *findComponent(uint32_t serviceId, int16_t SCIdS);
-        ServiceComponent *findPacketComponent(int16_t SCId);
+  // Called from the frontend
+  uint16_t getEnsembleId() const;
+  uint8_t getEnsembleEcc() const;
+  DabLabel getEnsembleLabel() const;
+  std::vector<Service> getServiceList() const;
+  Service getService(uint32_t sId) const;
+  std::list<ServiceComponent> getComponents(const Service& s) const;
+  Subchannel getSubchannel(const ServiceComponent& sc) const;
+  std::chrono::system_clock::time_point getTimeLastFCT0Frame() const;
 
-        void bindAudioService(
-                int8_t TMid,
-                uint32_t SId,
-                int16_t compnr,
-                int16_t subChId,
-                int16_t ps_flag,
-                int16_t ASCTy);
+private:
+  RadioControllerInterface& myRadioInterface;
+  Service* findServiceId(uint32_t serviceId);
+  ServiceComponent* findComponent(uint32_t serviceId, int16_t SCIdS);
+  ServiceComponent* findPacketComponent(int16_t SCId);
 
-        void bindDataStreamService(
-                int8_t TMid,
-                uint32_t SId,
-                int16_t compnr,
-                int16_t subChId,
-                int16_t ps_flag,
-                int16_t DSCTy);
+  void bindAudioService(
+      int8_t TMid, uint32_t SId, int16_t compnr, int16_t subChId, int16_t ps_flag, int16_t ASCTy);
 
-        void bindPacketService(
-                int8_t TMid,
-                uint32_t SId,
-                int16_t compnr,
-                int16_t SCId,
-                int16_t ps_flag,
-                int16_t CAflag);
+  void bindDataStreamService(
+      int8_t TMid, uint32_t SId, int16_t compnr, int16_t subChId, int16_t ps_flag, int16_t DSCTy);
 
-        void dropService(uint32_t SId);
+  void bindPacketService(
+      int8_t TMid, uint32_t SId, int16_t compnr, int16_t SCId, int16_t ps_flag, int16_t CAflag);
 
-        void process_FIG0(uint8_t *);
-        void process_FIG1(uint8_t *);
-        void process_FIG2(uint8_t *);
-        void FIG0Extension0(uint8_t *);
-        void FIG0Extension1(uint8_t *);
-        void FIG0Extension2(uint8_t *);
-        void FIG0Extension3(uint8_t *);
-        void FIG0Extension5(uint8_t *);
-        void FIG0Extension8(uint8_t *);
-        void FIG0Extension9(uint8_t *);
-        void FIG0Extension10(uint8_t *);
-        void FIG0Extension13(uint8_t *);
-        void FIG0Extension14(uint8_t *);
-        void FIG0Extension16(uint8_t *);
-        void FIG0Extension17(uint8_t *);
-        void FIG0Extension18(uint8_t *);
-        void FIG0Extension19(uint8_t *);
-        void FIG0Extension21(uint8_t *);
-        void FIG0Extension22(uint8_t *);
+  void dropService(uint32_t SId);
 
-        int16_t HandleFIG0Extension1(uint8_t *d, int16_t offset, uint8_t pd);
+  void process_FIG0(uint8_t*);
+  void process_FIG1(uint8_t*);
+  void process_FIG2(uint8_t*);
+  void process_FIG6(uint8_t*);
+  void process_FIG7(uint8_t*);
+  void process_FIGUnsupported(uint8_t*);
 
-        int16_t HandleFIG0Extension2(
-                uint8_t *d,
-                int16_t offset,
-                uint8_t cn,
-                uint8_t pd);
+  void FIG0Extension0(uint8_t*);
+  void FIG0Extension1(uint8_t*);
+  void FIG0Extension2(uint8_t*);
+  void FIG0Extension3(uint8_t*);
+  void FIG0Extension5(uint8_t*);
+  void FIG0Extension7(uint8_t*);
+  void FIG0Extension8(uint8_t*);
+  void FIG0Extension9(uint8_t*);
+  void FIG0Extension10(uint8_t*);
+  void FIG0Extension13(uint8_t*);
+  void FIG0Extension14(uint8_t*);
+  void FIG0Extension17(uint8_t*);
+  void FIG0Extension18(uint8_t*);
+  void FIG0Extension19(uint8_t*);
+  void FIG0Extension21(uint8_t*);
+  void FIG0Extension22(uint8_t*);
+  void FIG0ExtensionUnsupported(uint8_t*);
 
-        int16_t HandleFIG0Extension3(uint8_t *d, int16_t used);
-        int16_t HandleFIG0Extension5(uint8_t *d, int16_t offset);
-        int16_t HandleFIG0Extension8(uint8_t *d, int16_t used, uint8_t pdBit);
-        int16_t HandleFIG0Extension13(uint8_t *d, int16_t used, uint8_t pdBit);
-        int16_t HandleFIG0Extension22(uint8_t *d, int16_t used);
+  int16_t HandleFIG0Extension1(uint8_t* d, int16_t offset, uint8_t pd);
+  int16_t HandleFIG0Extension2(uint8_t* d, int16_t offset, uint8_t cn, uint8_t pd);
+  int16_t HandleFIG0Extension3(uint8_t* d, int16_t used);
+  int16_t HandleFIG0Extension5(uint8_t* d, int16_t offset);
+  int16_t HandleFIG0Extension8(uint8_t* d, int16_t used, uint8_t pdBit);
+  int16_t HandleFIG0Extension13(uint8_t* d, int16_t used, uint8_t CN_bit, uint8_t OE_bit, uint8_t pdBit);
+  int16_t HandleFIG0Extension22(uint8_t* d, int16_t used);
 
-        bool timeOffsetReceived = false;
-        dab_date_time_t dateTime = {};
-        mutable std::mutex mutex;
-        uint16_t ensembleId = 0;
-        uint8_t ensembleEcc = 0;
-        DabLabel ensembleLabel;
-        std::vector<Subchannel> subChannels;
-        std::vector<ServiceComponent> components;
-        std::vector<Service> services;
-        std::unordered_map<uint32_t, uint8_t> serviceRepeatCount;
-        std::chrono::steady_clock::time_point timeLastServiceDecrement;
-        std::chrono::system_clock::time_point timeLastFCT0Frame;
+  bool timeOffsetReceived = false;
+  dab_date_time_t dateTime = {};
+  mutable std::mutex mutex;
+  uint16_t ensembleId = 0;
+  uint8_t ensembleEcc = 0;
+  DabLabel ensembleLabel;
+  std::vector<Subchannel> subChannels;
+  std::vector<ServiceComponent> components;
+  std::vector<Service> services;
+  std::unordered_map<uint32_t, uint8_t> serviceRepeatCount;
+  std::chrono::steady_clock::time_point timeLastServiceDecrement;
+  std::chrono::system_clock::time_point timeLastFCT0Frame;
+
+  CMOTManager m_MOTManager;
 };
 
 #endif
-

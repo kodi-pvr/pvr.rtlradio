@@ -28,42 +28,41 @@
 #ifndef __FIC_HANDLER
 #define __FIC_HANDLER
 
-#include <mutex>
-#include <cstdio>
-#include <cstdint>
-#include "viterbi.h"
 #include "fib-processor.h"
 #include "radio-controller.h"
+#include "viterbi.h"
 
-class FicHandler: public Viterbi
+#include <cstdint>
+#include <cstdio>
+#include <mutex>
+
+class FicHandler : public Viterbi
 {
-    public:
-        FicHandler(RadioControllerInterface& mr);
-        void    processFicBlock(const softbit_t *data, int16_t blkno);
-        void    setBitsperBlock(int16_t b);
-        void    clearEnsemble();
-        int     getFicDecodeRatioPercent();
+public:
+  FicHandler(RadioControllerInterface& mr);
+  void processFicBlock(const softbit_t* data, int16_t blkno);
+  void setBitsperBlock(int16_t b);
+  void clearEnsemble();
+  int getFicDecodeRatioPercent();
 
-        FIBProcessor fibProcessor;
+  FIBProcessor fibProcessor;
 
-    private:
-        RadioControllerInterface& myRadioInterface;
-        void        processFicInput(const softbit_t *ficblock, int16_t ficno);
-        const int8_t *PI_15;
-        const int8_t *PI_16;
-        std::vector<uint8_t> bitBuffer_out;
-        std::vector<softbit_t> ofdm_input;
-        std::vector<softbit_t> viterbiBlock;
-        int16_t     index = 0;
-        int16_t     bitsperBlock = 2 * 1536;
-        int16_t     ficno = 0;
-        uint8_t     PRBS[768];
+private:
+  RadioControllerInterface& myRadioInterface;
+  void processFicInput(const softbit_t* ficblock, int16_t ficno);
+  const int8_t* PI_15;
+  const int8_t* PI_16;
+  std::vector<uint8_t> bitBuffer_out;
+  std::vector<softbit_t> ofdm_input;
+  std::vector<softbit_t> viterbiBlock;
+  int16_t index = 0;
+  int16_t bitsperBlock = 2 * 1536;
+  int16_t ficno = 0;
+  uint8_t PRBS[768];
 
-        // Saturating up/down-counter in range [0, 10] corresponding
-        // to the number of FICs with correct CRC
-        int         fic_decode_success_ratio = 0;
+  // Saturating up/down-counter in range [0, 10] corresponding
+  // to the number of FICs with correct CRC
+  int fic_decode_success_ratio = 0;
 };
 
 #endif
-
-

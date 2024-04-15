@@ -163,7 +163,15 @@ bool RadioReceiver::playProgramme(ProgrammeHandlerInterface& handler,
                             handler, sc.audioType(), dumpFileName, subch);
                     return true;
                 }
+                else
+                {
+                  fprintf(stderr, "---------------> playProgramme sc.audioType() %i\n", sc.audioType());
+                }
             }
+        }
+        else
+        {
+          fprintf(stderr, "---------------> playProgramme sc.transportMode() %i\n", sc.transportMode());
         }
     }
 

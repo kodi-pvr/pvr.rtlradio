@@ -35,9 +35,9 @@
 
 using namespace std;
 
-string Channels::firstChannel = "5A";
+string CChannels::firstChannel = "5A";
 
-Channels::Channels()
+CChannels::CChannels()
 {
     // Band III
     frequencyMap["5A"] = 174928000;
@@ -103,7 +103,7 @@ Channels::Channels()
     currentFrequencyIndex = 0;
 }
 
-int Channels::getFrequency(const string& channelName)
+int CChannels::getFrequency(const string& channelName)
 {
     int frequency = 0;
 
@@ -128,7 +128,7 @@ int Channels::getFrequency(const string& channelName)
     return frequency;
 }
 
-string Channels::getNextChannel(void)
+string CChannels::getNextChannel(void)
 {
     currentFrequencyIndex++;
 
@@ -138,22 +138,22 @@ string Channels::getNextChannel(void)
         return getChannelNameAtIndex(currentFrequencyIndex);
 }
 
-string Channels::getCurrentChannel(void)
+string CChannels::getCurrentChannel(void)
 {
     return currentChannel;
 }
 
-int Channels::getCurrentFrequency(void)
+int CChannels::getCurrentFrequency(void)
 {
     return currentFrequency;
 }
 
-int Channels::getCurrentIndex()
+int CChannels::getCurrentIndex()
 {
     return currentFrequencyIndex;
 }
 
-string Channels::getChannelNameAtIndex(int index)
+string CChannels::getChannelNameAtIndex(int index)
 {
     string channelName = "";
 
@@ -224,7 +224,7 @@ string Channels::getChannelNameAtIndex(int index)
     return channelName;
 }
 
-std::string Channels::getChannelForFrequency(int frequency)
+std::string CChannels::getChannelForFrequency(int frequency)
 {
     for (const auto c_f : frequencyMap) {
         if (c_f.second == frequency) {

@@ -20,5 +20,12 @@ enum class LOGLevel
 };
 
 void LOG(LOGLevel loglevel, const char* format, ...);
+void DEBUG_PRINT(const char* format, ...);
+
+#if PRINT_DEBUG == 1
+#define DBGLOG(f, ...) { utils::DEBUG_PRINT(f, ##__VA_ARGS__); }
+#else
+#define DBGLOG
+#endif
 
 };

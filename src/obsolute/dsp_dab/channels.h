@@ -38,10 +38,10 @@
 
 #define NUMBEROFCHANNELS 54
 
-class Channels
+class CChannels
 {
 public:
-    Channels();
+    CChannels();
     int getFrequency(const std::string& channelName);
     std::string getNextChannel(void);
     std::string getCurrentChannel(void);

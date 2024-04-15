@@ -1,6 +1,4 @@
 set(SOURCES fft.cpp
-            Xtan2.cpp
-            channels.cpp
             dab-constants.cpp
             fib-processor.cpp
             fic-handler.cpp
@@ -18,8 +16,6 @@ set(SOURCES fft.cpp
             viterbi.cpp)
 
 set(HEADERS MathHelper.h
-            Xtan2.h
-            channels.h
             dab-constants.h
             fft.h
             fib-processor.h

@@ -118,11 +118,20 @@ bool CMOTManager::HandleMOTDataGroup(const uint8_t* dg, size_t size)
   size_t seg_size;
 
   if (!ParseCheckDataGroupHeader(dg, size, offset, dg_type))
+  {
+    fprintf(stderr, "-----------> 1\n");
     return false;
+  }
   if (!ParseCheckSessionHeader(dg, size, offset, last_seg, seg_number, transport_id))
+  {
+    fprintf(stderr, "-----------> 2\n");
     return false;
+  }
   if (!ParseCheckSegmentationHeader(dg, size, offset, seg_size))
+  {
+    fprintf(stderr, "-----------> 3\n");
     return false;
+  }
 
   // add segment to MOT object (reset if necessary)
   if (m_currentTransportId != transport_id)
@@ -134,8 +143,8 @@ bool CMOTManager::HandleMOTDataGroup(const uint8_t* dg, size_t size)
 
   // check if object shall be shown
   bool display = m_object.IsToBeShown();
-  //	fprintf(stderr, "dg_type: %d, seg_number: %2d%s, transport_id: %5d, size: %4zu; display: %s\n",
-  //			dg_type, seg_number, last_seg ? " (LAST)" : "", transport_id, seg_size, display ? "true" : "false");
+  	fprintf(stderr, "dg_type: %d, seg_number: %2d%s, transport_id: %5d, size: %4zu; display: %s\n",
+  			dg_type, seg_number, last_seg ? " (LAST)" : "", transport_id, seg_size, display ? "true" : "false");
 
   // if object shall be shown, update it
   return display;

@@ -48,7 +48,7 @@ bool CMOTDecoder::DecodeDataGroup()
 
   CDataGroup::Reset();
 
-  return m_motManager.HandleMOTDataGroup(m_dgRaw.data(), m_motLength);
+  return false;// m_motManager.HandleMOTDataGroup(m_dgRaw.data(), m_motLength);
 }
 
 std::vector<uint8_t> CMOTDecoder::GetMOTDataGroup()

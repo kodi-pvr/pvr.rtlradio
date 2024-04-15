@@ -51,4 +51,14 @@ void LOG(LOGLevel loglevel, const char* format, ...)
   fprintf(stderr, "%s%s\n", typeStr.c_str(), str.c_str());
 }
 
+void DEBUG_PRINT(const char* format, ...)
+{
+  va_list args;
+  va_start(args, format);
+  const std::string str = kodi::tools::StringUtils::FormatV(format, args);
+  va_end(args);
+
+  fprintf(stderr, "%s", str.c_str());
+}
+
 };
