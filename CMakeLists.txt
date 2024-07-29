@@ -28,8 +28,10 @@ else()
 endif()
 
 find_package(Kodi REQUIRED)
+find_package(fmt REQUIRED)
 find_package(FFTW REQUIRED)
-find_package(FDK_AAC REQUIRED)
+find_package(FAAD2 REQUIRED)
+find_package(FDK_AAC REQUIRED) # needed on dsp_hd
 find_package(glm REQUIRED)
 find_package(MPG123 REQUIRED)
 find_package(RapidJSON 1.1.0 REQUIRED)
@@ -51,21 +53,33 @@ else()
   add_definitions(${OPENGLES_DEFINITIONS})
 endif()
 
+set(FMT_LIBS ${LIBFMT_LIBRARIES})
+set(FAAD2_LIBS ${FAAD2_LIBRARY})
+set(VITERBI_LIBS )
+
 add_definitions(-DDABLIN_AAC_FDKAAC -DFFTW_NO_Complex -Drtlsdr_EXPORTS=1)
 
 include_directories(${KODI_INCLUDE_DIR}/.. # Hack way with "/..", need bigger Kodi cmake rework to match right include ways
                     ${FFTW_INCLUDE_DIRS}
+                    ${FAAD2_INCLUDE_DIR}
                     ${FDK_AAC_INCLUDE_DIRS}
                     ${GLM_INCLUDE_DIR}
                     ${MPG123_INCLUDE_DIR}
                     ${RAPIDJSON_INCLUDE_DIRS}
-                    ${SQLITE3_INCLUDE_DIR})
+                    ${SQLITE3_INCLUDE_DIR}
+                    ${LIBFMT_INCLUDE_DIRS}
+                    lib/ViterbiDecoderCpp/include)
 
-list(APPEND DEPLIBS ${FDK_AAC_LIBRARIES}
+list(APPEND DEPLIBS ${FAAD2_LIBRARY}
+                    ${FDK_AAC_LIBRARIES}
+                    #${FFTW_FLOAT_LIB}
                     ${FFTW_LONGDOUBLE_LIB}
                     ${MPG123_LIBRARIES}
-                    ${SQLITE3_LIBRARY})
+                    ${SQLITE3_LIBRARY}
+                    ${LIBFMT_LIBRARIES})
 
+set(FFTW3_LIBS ${FFTW_LONGDOUBLE_LIB})
+#message(FATAL_ERROR "----> ${FAAD2_LIBRARY} <----")
 if(USB_DEVICE_SUPPORT)
   if(NOT DISTRIBUTION_BUILD)
     list(APPEND DEPLIBS ${LIBUSB_1_LIBRARIES})
@@ -87,14 +101,17 @@ add_subdirectory(${PROJECT_SOURCE_DIR}/src/exception_control)
 add_subdirectory(${PROJECT_SOURCE_DIR}/src/utils)
 
 list(APPEND DEPLIBS code_src
-                    code_src_dsp_dab
                     code_src_dsp_fm
                     code_src_dsp_hd
                     code_src_gui
                     code_src_utils
                     code_src_exception_control
                     $<$<BOOL:${WIN32}>:ws2_32>
-                    $<$<BOOL:${WIN32}>:Shlwapi>)
+                    $<$<BOOL:${WIN32}>:Shlwapi>
+                    ofdm_core
+                    dab_core 
+                    basic_radio
+                    basic_scraper)
 
 set(PVRRTLRADIO_SOURCES src/addon.cpp)
 set(PVRRTLRADIO_HEADERS src/addon.h)

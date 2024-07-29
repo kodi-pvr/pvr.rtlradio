@@ -24,12 +24,13 @@
 #define __DABMUXSCANNER_H_
 #pragma once
 
-#include "dsp_dab/radio-receiver.h"
-#include "dsp_dab/ringbuffer.h"
+//#include "dsp_dab/radio-receiver.h"
+//#include "dsp_dab/ringbuffer.h"
 #include "muxscanner.h"
 
 #include <atomic>
 #include <chrono>
+#include <complex>
 #include <condition_variable>
 #include <memory>
 #include <mutex>
@@ -42,10 +43,10 @@
 //
 // Implements the multiplex scanner for DAB
 
-class dabmuxscanner : public muxscanner,
+class dabmuxscanner : public muxscanner/*,
                       private InputInterface,
                       private ProgrammeHandlerInterface,
-                      private RadioControllerInterface
+                      private RadioControllerInterface*/
 {
 public:
   // Destructor
@@ -125,26 +126,26 @@ private:
   // getSamples
   //
   // Reads the specified number of samples from the input device
-  int32_t getSamples(DSPCOMPLEX* buffer, int32_t size) override;
+  int32_t getSamples(std::complex<float>* buffer, int32_t size) /*override*/;
 
   // getSamplesToRead
   //
   // Gets the number of input samples that are available to read from input
-  int32_t getSamplesToRead(void) override;
+  int32_t getSamplesToRead(void) /*override*/;
 
   // is_ok
   //
   // Determines if the input is still "OK"
-  bool is_ok(void) override;
+  bool is_ok(void) /*override*/;
 
   // restart
   //
   // Restarts the input
-  bool restart(void) override;
+  bool restart(void) /*override*/;
 
   //-----------------------------------------------------------------------
   // RadioControllerInterface
-
+/*
   // onServiceDetected
   //
   // Invoked when a new service was detected
@@ -164,7 +165,7 @@ private:
   //
   // Invoked when signal synchronization was acquired or lost
   void onSyncChange(bool isSync) override;
-
+*/
   //-----------------------------------------------------------------------
   // Member Variables
 
@@ -173,8 +174,8 @@ private:
 
   // DEMODULATOR
   //
-  aligned_ptr<RadioReceiver> m_receiver; // RadioReceiver instance
-  RingBuffer<uint8_t> m_ringbuffer; // I/Q sample ring buffer
+  //aligned_ptr<RadioReceiver> m_receiver; // RadioReceiver instance
+  //RingBuffer<uint8_t> m_ringbuffer; // I/Q sample ring buffer
 
   // EVENT QUEUE
   //

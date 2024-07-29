@@ -60,12 +60,12 @@ inline std::string trim(const std::string& str)
 //	callback		- Callback function to invoke on status change
 
 dabmuxscanner::dabmuxscanner(uint32_t samplerate, callback const& callback)
-  : m_callback(callback), m_ringbuffer(RING_BUFFER_SIZE)
+  : m_callback(callback)//, m_ringbuffer(RING_BUFFER_SIZE)
 {
   assert(samplerate == SAMPLE_RATE);
   if (samplerate != SAMPLE_RATE)
     throw std::invalid_argument("samplerate");
-
+  /*
   // Construct and initialize the demodulator instance
   RadioControllerInterface& controllerinterface = *static_cast<RadioControllerInterface*>(this);
   InputInterface& inputinterface = *static_cast<InputInterface*>(this);
@@ -73,7 +73,7 @@ dabmuxscanner::dabmuxscanner(uint32_t samplerate, callback const& callback)
   options.disableCoarseCorrector = !kodi::addon::GetSettingBoolean("dabradio_coarse_corrector", true);
   options.freqsyncMethod = kodi::addon::GetSettingEnum<FreqsyncMethod>("dabradio_coarse_corrector_type", FreqsyncMethod::CorrelatePRS);
   m_receiver = make_aligned<RadioReceiver>(controllerinterface, inputinterface, options, 1);
-  m_receiver->restart(false);
+  m_receiver->restart(false);*/
 }
 
 //---------------------------------------------------------------------------
@@ -81,9 +81,9 @@ dabmuxscanner::dabmuxscanner(uint32_t samplerate, callback const& callback)
 
 dabmuxscanner::~dabmuxscanner()
 {
-  if (m_receiver)
+  /*if (m_receiver)
     m_receiver->stop(); // Stop receiver
-  m_receiver.reset(); // Reset receiver instance
+  m_receiver.reset(); // Reset receiver instance*/
 }
 
 //---------------------------------------------------------------------------
@@ -112,7 +112,7 @@ std::unique_ptr<dabmuxscanner> dabmuxscanner::create(uint32_t samplerate, callba
 //	length		- Length of the input samples, in bytes
 
 void dabmuxscanner::inputsamples(uint8_t const* samples, size_t length)
-{
+{/*
   bool invokecallback = false; // Flag to invoke the callback
 
   assert(length <= std::numeric_limits<int32_t>::max());
@@ -250,7 +250,7 @@ void dabmuxscanner::inputsamples(uint8_t const* samples, size_t length)
 
   // If anything about the multiplex has changed, invoke the callback
   if (invokecallback)
-    m_callback(m_muxdata);
+    m_callback(m_muxdata);*/
 }
 
 //---------------------------------------------------------------------------
@@ -263,10 +263,10 @@ void dabmuxscanner::inputsamples(uint8_t const* samples, size_t length)
 //	buffer		- Buffer to receive the input samples
 //	size		- Number of samples to read
 
-int32_t dabmuxscanner::getSamples(DSPCOMPLEX* buffer, int32_t size)
+int32_t dabmuxscanner::getSamples(std::complex<float>* buffer, int32_t size)
 {
   int32_t numsamples = 0; // Number of available samples in the buffer
-
+  /*
   // Allocate a temporary buffer to pull the data out of the ring buffer
   std::unique_ptr<uint8_t[]> tempbuffer(new uint8_t[size * 2]);
 
@@ -278,11 +278,11 @@ int32_t dabmuxscanner::getSamples(DSPCOMPLEX* buffer, int32_t size)
   {
 
     buffer[index] =
-        DSPCOMPLEX((static_cast<float>(tempbuffer[index * 2]) - 128.0f) / 128.0f, // real
+      std::complex<float>((static_cast<float>(tempbuffer[index * 2]) - 128.0f) / 128.0f, // real
                    (static_cast<float>(tempbuffer[(index * 2) + 1]) - 128.0f) / 128.0f // imaginary
         );
   }
-
+  */
   return numsamples / 2;
 }
 
@@ -297,7 +297,7 @@ int32_t dabmuxscanner::getSamples(DSPCOMPLEX* buffer, int32_t size)
 
 int32_t dabmuxscanner::getSamplesToRead(void)
 {
-  return m_ringbuffer.GetRingBufferReadAvailable() / 2;
+  return 0;// m_ringbuffer.GetRingBufferReadAvailable() / 2;
 }
 
 //---------------------------------------------------------------------------
@@ -327,7 +327,7 @@ bool dabmuxscanner::restart(void)
 {
   return true;
 }
-
+/*
 //---------------------------------------------------------------------------
 // dabmuxscanner::onServiceDetected (RadioControllerInterface)
 //
@@ -352,7 +352,7 @@ void dabmuxscanner::onServiceDetected(uint32_t sId)
 //
 //	label		- New ensemble label
 
-void dabmuxscanner::onSetEnsembleLabel(DabLabel& /*label*/)
+void dabmuxscanner::onSetEnsembleLabel(DabLabel& label)
 {
   std::unique_lock<std::mutex> lock(m_eventslock);
   m_events.emplace(event_t{eventid_t::SetEnsembleLabel, 0});
@@ -368,7 +368,7 @@ void dabmuxscanner::onSetEnsembleLabel(DabLabel& /*label*/)
 //	sId				- Service identifier
 //	label			- New service label
 
-void dabmuxscanner::onSetServiceLabel(uint32_t sId, DabLabel& /*label*/)
+void dabmuxscanner::onSetServiceLabel(uint32_t sId, DabLabel& label)
 {
   std::unique_lock<std::mutex> lock(m_eventslock);
   m_events.emplace(event_t{eventid_t::SetServiceLabel, sId});
@@ -388,7 +388,7 @@ void dabmuxscanner::onSyncChange(bool isSync)
   std::unique_lock<std::mutex> lock(m_eventslock);
   m_events.emplace(event_t{(isSync) ? eventid_t::Sync : eventid_t::LostSync, 0});
 }
-
+*/
 //---------------------------------------------------------------------------
 
 #pragma warning(pop)

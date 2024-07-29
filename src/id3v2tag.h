@@ -44,6 +44,8 @@ public:
   //-----------------------------------------------------------------------
   // Member Functions
 
+  void AddTextData(char const* id, char const* text);
+
   // album
   //
   // Sets the album (TALB) frame
@@ -62,7 +64,7 @@ public:
   // coverart
   //
   // Sets the cover art (APIC; type 0x03) frame
-  void coverart(char const* mimetype, uint8_t const* data, size_t length);
+  void coverart(uint8_t type, char const* mimetype, uint8_t const* data, size_t length);
 
   // create (static)
   //

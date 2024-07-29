@@ -1,0 +1,45 @@
+From f3a2fc375d0188271143481086ffac60ca5b0668 Mon Sep 17 00:00:00 2001
+From: Eugene Kliuchnikov <eustas.ru@gmail.com>
+Date: Mon, 12 Feb 2024 15:08:42 +0100
+Subject: [PATCH] Do not skip installing FAAD in MSVC build (#201)
+
+---
+ .github/workflows/build.yaml | 4 +++-
+ CMakeLists.txt               | 2 +-
+ 2 files changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/.github/workflows/build.yaml b/.github/workflows/build.yaml
+index 288ca17..d569e2f 100644
+--- a/.github/workflows/build.yaml
++++ b/.github/workflows/build.yaml
+@@ -76,6 +76,8 @@ jobs:
+            os: windows-latest
+            cmake_args: >-
+              -G "Visual Studio 17 2022" -A x64
++           cmake_build_options: >-
++             --config Release
+          - name: OSX
+            os: macos-latest
+ 
+@@ -100,7 +102,7 @@ jobs:
+             -DCMAKE_INSTALL_PREFIX=$RUNNER_TEMP/usrlocal \
+             -DBUILD_SHARED_LIBS=${SHARED} \
+             ${{ matrix.cmake_args }}
+-        cmake --build build -j ${NUM_CORES}
++        cmake --build build -j ${NUM_CORES} ${{ matrix.cmake_build_options || '' }}
+         cmake --install build
+ 
+   BuildOnMsys:
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 1cac67f..1021272 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -268,7 +268,7 @@ if (FAAD_BUILD_CLI)
+ endif()
+ # Installation
+ 
+-if(NOT FAAD_BUNDLED_MODE AND NOT MSVC)
++if(NOT FAAD_BUNDLED_MODE)
+   install(FILES "${CMAKE_CURRENT_BINARY_DIR}/faad2.pc"
+     DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
+ 
